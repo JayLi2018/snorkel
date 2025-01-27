@@ -45,11 +45,15 @@ class LabelingFunction:
         f: Callable[..., int],
         resources: Optional[Mapping[str, Any]] = None,
         pre: Optional[List[BasePreprocessor]] = None,
+        use_resourece_as_self: bool=False,
+        str_repr: Optional[str] = 'no str repr available'
     ) -> None:
         self.name = name
         self._f = f
         self._resources = resources or {}
         self._pre = pre or []
+        self.use_resourece_as_self=use_resourece_as_self
+        self.str_repr = str_repr
 
     def _preprocess_data_point(self, x: DataPoint) -> DataPoint:
         for preprocessor in self._pre:
@@ -74,7 +78,13 @@ class LabelingFunction:
             Label for data point
         """
         x = self._preprocess_data_point(x)
+        if(self.use_resourece_as_self):
+            return self._resources['rule'].evaluate(x)
         return self._f(x, **self._resources)
+    
+        
+    def __str__(self) -> str:
+        return self.str_repr
 
     def __repr__(self) -> str:
         preprocessor_str = f", Preprocessors: {self._pre}"

@@ -6,7 +6,7 @@ import pandas as pd
 
 def filter_unlabeled_dataframe(
     X: pd.DataFrame, y: np.ndarray, L: np.ndarray
-) -> Tuple[pd.DataFrame, np.ndarray]:
+) -> Tuple[pd.DataFrame, np.ndarray, np.ndarray]:
     """Filter out examples not covered by any labeling function.
 
     Parameters
@@ -26,4 +26,5 @@ def filter_unlabeled_dataframe(
         Probabilities matrix for data points labeled by at least one LF in L.
     """
     mask = (L != -1).any(axis=1)
-    return X.iloc[mask], y[mask]
+    non_mask = (L == -1).all(axis=1)
+    return X.iloc[mask], y[mask], L[mask], X.iloc[non_mask]
